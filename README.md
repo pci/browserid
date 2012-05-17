@@ -84,3 +84,5 @@ otherwise indicated.
 
   [MPL 2.0]: https://mozilla.org/MPL/2.0/
 
+Random text to trigger Travis-CI
+
