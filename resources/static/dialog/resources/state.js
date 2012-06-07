@@ -46,11 +46,7 @@ BrowserID.State = (function() {
       self.tosURL = info.tosURL;
       requiredEmail = info.requiredEmail;
 
-      if ((typeof(requiredEmail) !== "undefined") && (!bid.verifyEmail(requiredEmail))) {
-        // Invalid format
-        startAction("doError", "invalid_required_email", {email: requiredEmail});
-      }
-      else if (info.email && info.type === "primary") {
+      if (info.email && info.type === "primary") {
         primaryVerificationInfo = info;
         redirectToState("primary_user", info);
       }
@@ -98,6 +94,10 @@ BrowserID.State = (function() {
 
     handleState("new_user", function(msg, info) {
       self.newUserEmail = info.email;
+
+      // cancel is disabled if the user is doing the initial password set
+      // for a requiredEmail.
+      info.cancelable = !requiredEmail;
       startAction(false, "doSetPassword", info);
     });
 
@@ -351,15 +351,20 @@ BrowserID.State = (function() {
       startAction("doAddEmail", info);
     });
 
-    handleState("add_email_submit_with_secondary", function(msg, info) {
+    handleState("stage_email", function(msg, info) {
       user.passwordNeededToAddSecondaryEmail(function(passwordNeeded) {
         if(passwordNeeded) {
           self.addEmailEmail = info.email;
+          // cancel is disabled if the user is doing the initial password set
+          // for a requiredEmail.
+          info.cancelable = !requiredEmail;
           startAction(false, "doSetPassword", info);
         }
         else {
           startAction(false, "doStageEmail", info);
         }
+
+        complete(info.complete);
       });
     });
 
