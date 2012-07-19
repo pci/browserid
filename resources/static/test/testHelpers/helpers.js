@@ -20,14 +20,14 @@ BrowserID.TestHelpers = (function() {
       tooltip = bid.Tooltip,
       registrations = [],
       calls = {},
-      testOrigin = "https://browserid.org";
+      testOrigin = "https://login.persona.org";
 
   function register(message, cb) {
     registrations.push(mediator.subscribe(message, function(msg, info) {
       if(calls[msg]) {
         throw msg + " triggered more than once";
       }
-      calls[msg] = true;
+      calls[msg] = info || true;
 
       cb && cb.apply(null, arguments);
     }));
@@ -68,7 +68,7 @@ BrowserID.TestHelpers = (function() {
       transport.setContextInfo("cookies_enabled", true);
       transport.useResult("valid");
 
-      network.init();
+      network.init({ forceCookieStatus: undefined });
       clearStorage();
 
       $("body").stop().show();
@@ -112,12 +112,42 @@ BrowserID.TestHelpers = (function() {
 
     register: register,
     isTriggered: function(message) {
-      return calls[message];
+      return message in calls;
     },
 
-    testTriggered: function(message) {
-      equal(calls[message], true, message + " was triggered");
+    testTriggered: function(message, expectedFields) {
+      ok(message in calls, message + " was triggered");
+      if (expectedFields) this.testObjectValuesEqual(calls[message], expectedFields);
     },
+
+    expectedMessage: function(message, expectedFields) {
+    // keep track of the original start function.  When the start function is
+    // called, call the proxy start function and then the original start
+    // function.  This allows proxy start functions to be chained and multiple
+    // expectedMessages to be called.
+    start = function(origStart) {
+      TestHelpers.testTriggered(message, expectedFields);
+      start = origStart;
+      start();
+    }.bind(null, start);
+
+    register(message);
+  },
+
+  unexpectedMessage: function(message) {
+    // keep track of the original start function.  When the start function is
+    // called, call the proxy start function and then the original start
+    // function.  This allows proxy start functions to be chained and multiple
+    // expectedMessages to be called.
+    start = function(origStart) {
+      equal(TestHelpers.isTriggered(message), false, message + " was not triggered");
+      start = origStart;
+      start();
+
+    }.bind(null, start);
+    register(message);
+  },
+
 
     errorVisible: function() {
       return screens.error.visible;
@@ -204,10 +234,8 @@ BrowserID.TestHelpers = (function() {
     },
 
     testKeysInObject: function(objToTest, expected, msg) {
-      if (!objToTest) {
-        ok(false, "Missing object to test against");
-        return;
-      }
+      if (!objToTest) ok(false, "missing objToTest");
+      if (!expected) ok(false, "missing objToTest");
 
       for(var i=0, key; key=expected[i]; ++i) {
         ok(key in objToTest, msg || ("object contains " + key));
@@ -215,16 +243,51 @@ BrowserID.TestHelpers = (function() {
     },
 
     testObjectValuesEqual: function(objToTest, expected, msg) {
+      if (!objToTest) ok(false, "missing objToTest");
+      if (!expected) ok(false, "missing objToTest");
+
       for(var key in expected) {
         deepEqual(objToTest[key], expected[key], key + " set to: " + expected[key] + (msg ? " - " + msg : ""));
       }
     },
 
+    testUndefined: function(toTest, msg) {
+      equal(typeof toTest, "undefined", msg || "object is undefined");
+    },
+
+    testNotUndefined: function(toTest, msg) {
+      notEqual(typeof toTest, "undefined", msg || "object is defined");
+    },
+
+    testVisible: function(selector, msg) {
+      ok($(selector).is(":visible"), msg || selector + " should be visible");
+    },
+
     testHasClass: function(selector, className, msg) {
       ok($(selector).hasClass(className),
-          selector + " has className " + className + " - " + msg);
-    }
+          msg || (selector + " has className " + className));
+    },
 
+    testNotHasClass: function(selector, className, msg) {
+      ok(!$(selector).hasClass(className),
+          msg || (selector + " does not have className " + className));
+    },
+
+    testElementExists: function(selector, msg) {
+      ok($(selector).length, msg || ("element '" + selector + "' exists"));
+    },
+
+    testElementDoesNotExist: function(selector, msg) {
+      ok(!$(selector).length, msg || ("element '" + selector + "' does not exist"));
+    },
+
+    testRPTosPPShown: function(msg) {
+      TestHelpers.testHasClass("body", "rptospp", msg || "RP TOS/PP shown");
+    },
+
+    testRPTosPPNotShown: function(msg) {
+      TestHelpers.testNotHasClass("body", "rptospp", msg || "RP TOS/PP not shown");
+    }
   };
 
   return TestHelpers;

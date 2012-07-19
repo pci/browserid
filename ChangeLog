@@ -1,7 +1,61 @@
-train-2012.06.08 (in progress):
-  * Support non-english passwords: issue #1631
-  * remove obsolete code - 'code_update' handler: issue #1645
+train-2012.07.20: (in progress)
+  * 
+
+train-2012.07.06:
+  * refinement of all user facing language: #1889, #1905, #1675, #1923, #1925
+  * requiredEmail feature removed: #1760
+  * A new /about page #1768
+  * watch() parameter - loggedInEmail renamed to loggedInUser #1805
+  * persona ToS / PP now displayed in dialog: #1240
+  * fix cases where redirection to website after verification would fail: #1860
+  * clean up console messages: #1518
+  * load_gen cleanup: #1278
+  * user interface improvements: #1777, #1661, #1433, #1548, #1774, #1721, #1826, #868, #1517, #1093, #1892, #1928
+  * updates to "key performance indicator": #1667, #1730
+  * test improvments: #1794, #1875, #1883
+  * code cleanup: #1778, #1756, #1748, #1849, #1852
+  * font licenses added to source tree: #1820
+  * load time performance improvements: #1793, #1851, #1861
+  * improvments to email provider API ("primary"): #1502
+  * security improvments - better random numbers: #1788
+  * Fix Persona on Windows Metro: #1867
+  * Fix dialog layout when rendered in a native webview on iOS: #1517
+
+train-2012.06.22:
+  * browserid.org now redirects to login.persona.org, all URLs are updated: #1743
+  * Websites can now provide their name and logo (requires SSL) to be displayed in the dialog: #1098, #1761
+  * A user is now sent back to the site they were visiting after verification (requires .watch() API): #385
+  * Fix .watch() API under IE8: #1637
+  * For dev and ephemeral deployments, move to awsbox, and new URLs: #1394, #1046, #1741
+  * Fix the scroll bar appearing on the main site's index page if it is not needed: #1693
+  * Clear the password if the user types a password then changes the email address: #1540
+  * New watch API now requires invocation with proper context (navigator.id.foo, not var foo = navigator.id.foo)
+  * Router fixes: #1713
+  * Serve fonts locally, don't pull resources from google: #1695
+  * Optimize images: #1747
+  * Fix flashes when verifying an email address: #1734
+  * Unit test added which runs jshint: #1731
+  * Fix submit occurring when selecting an email address in Firefox from the auto-complete list: #1780
+  * For KPI data, round timestamp to nearest 10 minutes, making correlation improbable: #1732
+  * Code cleanup: #1701, #1703, #1000, #1248, #1759, #1733, #1792
+  * Breaking API change: Persona now returns pubkey from generateKeypair to IdPs as a string
+
+train-2012.06.08:
+  * rebrand from 'browserid' to 'persona': (including regressions #1711 #1706 #1716 #1719)
+  * new "router" process added - subsumes responsibility of old "webhead" process, handles all requets forwarding: #1657
+  * Support non-english passwords: #1631
   * allow sessions to persist for 4 weeks after a user confirms ownership of a device (was effectively 1 week): #1632
+  * general code cleanup, removal of obsolete code, accidental globals cleaned up: #1645 #1681 #1699
+  * fix tab order on signup page: #1635
+  * minified include.js again has link to unminified source: #1624
+  * improve handling of uncaught exceptions (new statsd counter): #1558
+  * fix cachify stuff to allow multiple background images per css dec: #1652
+  * 50x error pages added to repo
+  * authenticated sessions are now 4 weeks: #1632, #1572
+  * improvements to KPI system: #1614 #1619 #1660 #1698
+  * UI improvements: #1684
+  * new secret debug menu added to dialog
+  * "silent assertions" (via observer api) now check cert expiry and don't issue invalid assertions
 
 train-2012.05.25:
   * many KPI improvements: #1597, #1613

@@ -23,7 +23,6 @@
       return decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 
-
   if (!navigator.id.beginAuthentication || navigator.id._primaryAPIIsShimmed) {
     navigator.id.beginAuthentication = function(cb) {
       if (typeof cb !== 'function') {
@@ -34,11 +33,17 @@
     };
 
     navigator.id.completeAuthentication = function(cb) {
-      window.location = getParameterByName('return_to');
+      if (window.name == 'auth_with_primary')
+        window.location = 'https://login.persona.org/authenticate_with_primary#complete';
+      else
+        window.location = 'https://login.persona.org/sign_in#AUTH_RETURN';
     };
 
     navigator.id.raiseAuthenticationFailure = function(reason) {
-      window.location = getParameterByName('return_to');
+      if (window.name == 'auth_with_primary')
+        window.location = 'https://login.persona.org/authenticate_with_primary#complete';
+      else
+        window.location = 'https://login.persona.org/sign_in#AUTH_RETURN_CANCEL';
     };
 
     navigator.id._primaryAPIIsShimmed = true;

@@ -16,12 +16,12 @@ var exampleServer = express.createServer();
 
 exampleServer.use(express.logger({ format: 'dev' }));
 
-if (process.env['BROWSERID_URL']) {
-  var burl = urlparse(process.env['BROWSERID_URL']).validate().normalize().originOnly().toString();
+if (process.env['PUBLIC_URL']) {
+  var burl = urlparse(process.env['PUBLIC_URL']).validate().normalize().originOnly().toString();
   console.log('using browserid server at ' + burl);
 
   exampleServer.use(postprocess(function(req, buffer) {
-    return buffer.toString().replace(new RegExp('https://browserid.org', 'g'), burl);
+    return buffer.toString().replace(new RegExp('https://login.persona.org', 'g'), burl);
   }));
 }
 

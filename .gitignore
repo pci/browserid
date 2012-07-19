@@ -7,3 +7,7 @@
 /npm-debug.log
 /resources/static/build
 /resources/static/production
+/resources/static/i18n
+.DS_Store
+Thumbs.db
+/locale

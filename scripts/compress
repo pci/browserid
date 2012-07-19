@@ -12,10 +12,6 @@ const staticPath = path.join(__dirname, '..', 'resources', 'static');
 
 var langs = config.get('supported_languages');
 
-// remove the "debug" language.
-var i = langs.indexOf(config.get('debug_lang'));
-if (i != -1) langs.splice(i, 1);
-
 var all = resources.all(langs);
 
 var cc = new computecluster({
@@ -41,8 +37,15 @@ Object.keys(all).forEach(function(resource) {
   // in prod '/build/templates.js' has all templates glommed into it,
   // and is bundled into the Big Minified Piles Of Resources we ship.
   // Here we sub the former with the latter.
-  var ix = all[resource].indexOf('/shared/templates.js');
-  if (ix != -1) all[resource].splice(ix, 1, '/build/templates.js');
+  var ix = all[resource].indexOf('/common/js/templates.js');
+  if (ix !== -1) all[resource].splice(ix, 1, '/build/templates.js');
+
+  // remove translation files from default and debug languages.  #1905
+  [ config.get('debug_lang'), config.get('default_lang') ].forEach(function(l) {
+    var file = '/i18n/' + i18n.localeFrom(l) + '/client.json';
+    var ix = all[resource].indexOf(file);
+    if (-1 !== ix) all[resource].splice(ix, 1);
+  });
 
   cc.enqueue({
     file: resource,
